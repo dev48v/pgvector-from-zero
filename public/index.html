@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+  STEP 7 — The search UI
+  A single static page. It calls GET /api/search?q=... and renders the ranked
+  results with their similarity scores. No framework, no build step — just enough
+  to SEE semantic search working: type a meaning, get matching articles back.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Semantic Wikipedia Search · pgvector from zero</title>
+  <style>
+    :root { --accent: #10b981; --accent-dark: #059669; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: #e2e8f0;
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, #064e3b 0%, #0f172a 55%, #0f172a 100%);
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 64px 20px 40px; }
+    h1 { font-size: 30px; margin: 0 0 6px; }
+    h1 .dot { color: var(--accent); }
+    p.sub { color: #94a3b8; margin: 0 0 28px; }
+    form { display: flex; gap: 10px; }
+    input {
+      flex: 1; padding: 14px 16px; font-size: 16px; border-radius: 12px;
+      border: 1px solid #334155; background: #1e293b; color: #fff; outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+    button {
+      padding: 14px 22px; font-size: 16px; font-weight: 700; border: 0;
+      border-radius: 12px; cursor: pointer; color: #04231a;
+      background: var(--accent);
+    }
+    button:hover { background: var(--accent-dark); color: #fff; }
+    .examples { margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-size: 13px; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+      background: #1e293b; border: 1px solid #334155; color: #cbd5e1;
+    }
+    .chip:hover { border-color: var(--accent); color: #fff; }
+    .results { margin-top: 28px; display: grid; gap: 12px; }
+    .card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+      padding: 16px 18px; animation: fade .3s ease-out;
+    }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+    .card a { color: #fff; font-weight: 700; font-size: 17px; text-decoration: none; }
+    .card a:hover { color: var(--accent); }
+    .card p { color: #94a3b8; font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+    .score {
+      float: right; font-size: 12px; font-weight: 700; color: var(--accent);
+      background: rgba(16,185,129,.12); padding: 3px 10px; border-radius: 999px;
+    }
+    .muted { color: #64748b; font-size: 14px; }
+    footer { text-align: center; margin-top: 48px; }
+    footer a { color: #64748b; font-size: 13px; text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Semantic Wikipedia Search<span class="dot">.</span></h1>
+    <p class="sub">Search by <b>meaning</b>, not keywords. Powered by Postgres + pgvector and a free local embedding model.</p>
+
+    <form id="f">
+      <input id="q" placeholder="try: animals that live in the ocean" autocomplete="off" />
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="examples" id="examples">
+      <span class="chip">space exploration</span>
+      <span class="chip">famous battles in history</span>
+      <span class="chip">how the brain works</span>
+      <span class="chip">musical instruments</span>
+    </div>
+
+    <div class="results" id="results">
+      <p class="muted">Results ranked by cosine similarity appear here.</p>
+    </div>
+
+    <footer><a href="https://dev48v.infy.uk">&larr; Back to dev48v.infy.uk</a></footer>
+  </div>
+
+  <script>
+    const f = document.getElementById("f");
+    const q = document.getElementById("q");
+    const results = document.getElementById("results");
+
+    async function search(text) {
+      q.value = text;
+      results.innerHTML = '<p class="muted">Searching by meaning…</p>';
+      try {
+        const r = await fetch("/api/search?q=" + encodeURIComponent(text) + "&limit=6");
+        const data = await r.json();
+        if (!data.results || !data.results.length) {
+          results.innerHTML = '<p class="muted">No results. Did you run <code>npm run seed</code>?</p>';
+          return;
+        }
+        results.innerHTML = data.results.map(function (a) {
+          const pct = (a.similarity * 100).toFixed(1);
+          return '<div class="card">' +
+            '<span class="score">' + pct + '% match</span>' +
+            '<a href="' + a.url + '" target="_blank" rel="noopener">' + a.title + '</a>' +
+            '<p>' + a.summary + '</p>' +
+          '</div>';
+        }).join("");
+      } catch (e) {
+        results.innerHTML = '<p class="muted">Search failed — is the server running?</p>';
+      }
+    }
+
+    f.addEventListener("submit", function (e) { e.preventDefault(); if (q.value.trim()) search(q.value.trim()); });
+    document.querySelectorAll(".chip").forEach(function (c) {
+      c.addEventListener("click", function () { search(c.textContent); });
+    });
+  </script>
+</body>
+</html>
