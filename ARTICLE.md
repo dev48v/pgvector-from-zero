@@ -1,10 +1,8 @@
 ---
 title: "I Built a Search Engine That Understands Meaning — in ~150 Lines, Zero API Keys"
-published: false
+published: true
 description: "Embeddings + Postgres pgvector, explained from zero. Search Wikipedia by meaning, not keywords, with a free local model. Day 45 of TechFromZero."
 tags: ai, postgres, beginners, tutorial
-cover_image: ""
-canonical_url: ""
 ---
 
 Type **"animals that live in the ocean"** into a normal search box and it hunts
