@@ -1,0 +1,6 @@
+node_modules/
+.env
+# Transformers.js caches the downloaded model here on first run (~25 MB).
+.cache/
+dist/
+*.log

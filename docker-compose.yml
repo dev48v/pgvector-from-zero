@@ -1,0 +1,17 @@
+# One command — `docker compose up -d` — gives you a Postgres that already has
+# the pgvector extension compiled in. No local Postgres install, no "could not
+# open extension control file" pain. This is the official pgvector image.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pgvector_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

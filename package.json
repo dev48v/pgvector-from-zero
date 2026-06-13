@@ -1,0 +1,33 @@
+{
+  "name": "pgvector-from-zero",
+  "version": "1.0.0",
+  "description": "Semantic Wikipedia search built from zero with Postgres + pgvector and free local embeddings.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "seed": "tsx src/seed.ts"
+  },
+  "keywords": [
+    "pgvector",
+    "embeddings",
+    "vector-search",
+    "semantic-search",
+    "postgres"
+  ],
+  "author": "dev48v",
+  "license": "MIT",
+  "dependencies": {
+    "@xenova/transformers": "^2.17.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

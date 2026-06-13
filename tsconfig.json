@@ -1,0 +1,15 @@
+{
+  // We run TypeScript directly with `tsx` (no build step), so these options
+  // mostly drive editor type-checking. Node 22 + ESM is the target.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}
